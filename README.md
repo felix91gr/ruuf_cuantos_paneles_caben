@@ -12,11 +12,15 @@ Voy a utilizar una heurística (aproximación) que fue descrita por primera vez 
 
 1. La experiencia de que ciertos patrones de 5 bloques suelen llevar a un muy buen uso del espacio disponible:
 
-<img src="./imagenes/corte_de_5_ByD.png" alt="Patrón de 5 bloques" width="300" style="display:block;margin:auto;margin-top:10px;margin-bottom:15px"/>
+<p align="center">
+    <img src="./imagenes/corte_de_5_ByD.png" alt="Patrón de 5 bloques" width="300" style="display:block;margin:auto;margin-top:10px;margin-bottom:15px"/>
+</p>
 
 2. El conocimiento de que un rectángulo pequeño de dimensiones `(l, w)` cabe de forma exacta (sin restos) en un rectángulo de lados `(n·l, m·w)` para `n, m` enteros. Esta forma de rellenar el rectángulo de `(n·l, m·w)` se ve de la siguiente forma:
 
-<img src="./imagenes/corte_exacto_n_por_m.png" alt="Corte exacto de n x m" width="500" style="display:block;margin:auto;margin-top:10px;margin-bottom:15px"/>
+<p align="center">
+    <img src="./imagenes/corte_exacto_n_por_m.png" alt="Corte exacto de n x m" width="500" style="display:block;margin:auto;margin-top:10px;margin-bottom:15px"/>
+</p>
 
 Lo que se hace en B&D se basa en estas dos cosas:
 
@@ -80,6 +84,6 @@ El problema a resolver consiste en encontrar la máxima cantidad de rectángulos
 
 [^1]: E. Bischoff & W.B. Dowsland, [An Application of the Micro to Product Design and Distribution](https://link.springer.com/article/10.1057/jors.1982.54).
 
-[^2] R. Morabito & S. Morales, [A simple and effective recursive procedure for the manufacturer's pallet loading problem](https://www.semanticscholar.org/paper/A-simple-and-effective-recursive-procedure-for-the-Morabito-Morales/a4dd03e607b9e1e3720b99a516d14bf31a3ce854).
+[^2]: R. Morabito & S. Morales, [A simple and effective recursive procedure for the manufacturer's pallet loading problem](https://www.semanticscholar.org/paper/A-simple-and-effective-recursive-procedure-for-the-Morabito-Morales/a4dd03e607b9e1e3720b99a516d14bf31a3ce854).
 
 [^3]: E. G. Birgin, R. D. Lobato & R. Morabito, [An effective recursive partitioning approach for the packing of identical rectangles in a rectangle](http://www.ime.usp.br/~egbirgin/publications/blm.pdf).
