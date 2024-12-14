@@ -36,11 +36,8 @@ pub mod pallet_loading_problem {
 
             let z_upper_bound = find_upper_bound_continuous(w, l, W, L);
 
-            dbg!(z_lower_bound);
-            dbg!(z_upper_bound);
-
             if z_lower_bound == z_upper_bound {
-                dbg!("Corte de guillotina simple");
+                println!("El óptimo es un corte de guillotina simple :D");
                 z_lower_bound
             } else {
                 for (r1, s1) in P.iter() {
@@ -56,10 +53,11 @@ pub mod pallet_loading_problem {
 
                                         let overlap_1 = (L1 + L5 > L) && (W1 + W5 > W);
                                         let overlap_2 = (L2 + L4 > L) && (W2 + W4 > W);
-                                        if !overlap_1 && !overlap_2 {
+
+                                        let Z3_is_positive = L > L1 + L5 && W > W2 + W4;
+                                        if Z3_is_positive && !overlap_1 && !overlap_2 {
                                             // We use abs_diff because we avoid negative numbers
-                                            let (L3, W3) =
-                                                (L.abs_diff(L1 + L5), W.abs_diff(W2 + W4));
+                                            let (L3, W3) = (L - L1 - L5, W - W2 - W4);
 
                                             let z1 = (L1 / l) * (W1 / w);
                                             let z5 = (L5 / l) * (W5 / w);
@@ -67,14 +65,13 @@ pub mod pallet_loading_problem {
                                             let z4 = (L4 / w) * (W4 / l);
                                             let z3 = ((L3 / l) * (W3 / w)).max((L3 / w) * (W3 / l));
                                             let z = z1 + z2 + z3 + z4 + z5;
-                                            if z > z_lower_bound {
-                                                println!("------------------");
 
-                                                println!("New maximum found: {z}");
+                                            if z > z_lower_bound {
+                                                println!("Encontramos un nuevo máximo: {z}");
 
                                                 z_lower_bound = z;
                                                 if z_lower_bound == z_upper_bound {
-                                                    println!("Optimal has been found.");
+                                                    println!("Máximo encontrado es óptimo.");
                                                     return z;
                                                 }
                                             }
@@ -86,7 +83,7 @@ pub mod pallet_loading_problem {
                     }
                 }
 
-                println!("Finished. Unsure if optimal");
+                println!("Fin de la búsqueda. No estamos seguros de que el resultado sea óptimo.");
 
                 z_lower_bound
             }

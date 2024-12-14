@@ -9,4 +9,7 @@ fn main() {
     dbg!(cuantos_caben_b_y_d(2, 2, 1, 10));
     // Debiera dar 33
     dbg!(cuantos_caben_b_y_d(3, 4, 20, 20));
+
+    // Debiera dar 14
+    dbg!(cuantos_caben_b_y_d(5, 2, 12, 12));
 }
