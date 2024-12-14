@@ -42,10 +42,7 @@ fn cuantos_caben_b_y_d(w: u32, l: u32, W: u32, L: u32) -> u32 {
 
         let mut z_lower_bound = ((L / l) * (W / w)).max((W / l) * (L / w));
 
-        let L_star = w + P.iter().map(|(r, s)| r * l + s * w).max().unwrap();
-        let W_star = w + Q.iter().map(|(t, u)| t * l + u * w).max().unwrap();
-
-        let z_upper_bound = (L_star * W_star) / (l * w);
+        let z_upper_bound = find_upper_bound_continuous(w, l, W, L);
 
         dbg!(z_lower_bound);
         dbg!(z_upper_bound);
@@ -117,4 +114,13 @@ fn get_normal_sets(w: u32, l: u32, L: u32) -> Vec<(u32, u32)> {
     }
 
     normal_set
+}
+
+/// Calcula una cota superior a la cantidad de paneles w x l que caben en W x L,
+/// tomando la parte entera del cociente entre el área del rectángulo grande y
+/// el área del rectángulo pequeño.
+fn find_upper_bound_continuous(w: u32, l: u32, W: u32, L: u32) -> u32 {
+    let area_small_rectangle = w * l;
+    let area_large_rectangle = W * L;
+    area_large_rectangle / area_small_rectangle
 }
