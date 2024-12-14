@@ -1,5 +1,5 @@
 #![allow(non_snake_case)]
-use std::fs::File;
+use std::{collections::HashMap, fs::File};
 
 use csv::Reader;
 use ruuf_cuantos_paneles_caben::pallet_loading_problem::cuantos_caben_b_y_d;
@@ -25,15 +25,17 @@ fn get_iterator_for_csv_test_file(file_path: &str) -> Reader<File> {
 
 #[test]
 fn tests_cover_1_a() {
+    run_cover_test("./tests/CoverIA.txt");
+}
+
+fn run_cover_test(test_path: &str) {
     type Record = (u32, u32, u32, u32, u32);
 
-    let mut rdr = get_iterator_for_csv_test_file("./tests/CoverIA.txt");
+    let mut rdr = get_iterator_for_csv_test_file(test_path);
 
-    let mut count_optimums = 0;
     let mut count_total = 0;
     let mut total_relative_difference: f32 = 0.0;
-
-    let mut wrong_results = Vec::new();
+    let mut differences_vs_optimum: HashMap<u32, u32> = HashMap::new();
 
     for result in rdr.deserialize::<Record>() {
         if let Ok((L, W, l, w, solution)) = result {
@@ -42,173 +44,51 @@ fn tests_cover_1_a() {
             let our_solution = cuantos_caben_b_y_d(w, l, W, L);
 
             assert!(our_solution <= solution);
-            // This is supposed to be impossible.
-            // If this happens, the test technically fails.
-            if our_solution > solution {
-                wrong_results.push((L, W, l, w, solution));
-            } else if our_solution == solution {
-                count_optimums += 1;
-            } else {
-                total_relative_difference += ((solution - our_solution) as f32) / (solution as f32);
-            }
+
+            let delta_vs_optimum = solution - our_solution;
+
+            differences_vs_optimum
+                .entry(delta_vs_optimum)
+                .and_modify(|count| *count += 1)
+                .or_insert(1);
         }
     }
 
-    let average_relative_difference = total_relative_difference / (count_total as f32);
-    let percentage_optimal_solutions = (count_optimums as f32) / (count_total as f32);
+    println!("Resultados de probar con el test {test_path}:");
 
-    println!(
-        "Found {count_optimums} optimal solutions out of {count_total}, a {0:.2}% of the total.",
-        percentage_optimal_solutions * 100.0
-    );
-    println!("The average relative difference was of a {0:.2}% between the found and the known optimal solutions", average_relative_difference * 100.0);
+    let mut deltas: Vec<u32> = differences_vs_optimum.keys().map(|d| *d).collect();
+    deltas.sort();
 
-    if wrong_results.len() > 0 {
-        println!("The test has technically failed. Below are the failing scenarios:");
-        for res in wrong_results {
-            println!("{:?}", res);
+    for delta in deltas {
+        let count_of_delta = differences_vs_optimum.get(&delta).unwrap();
+        let percentage_of_total = 100.0 * *count_of_delta as f32 / count_total as f32;
+
+        if delta == 0 {
+            println!("Encontramos el óptimo para {count_of_delta} de {count_total} escenarios, un {0:.1}% del total", percentage_of_total);
+        } else {
+            println!("Encontramos una solución {delta} unidades menor al óptimo para {count_of_delta} de {count_total} escenarios, un {0:.2}% del total", percentage_of_total);
         }
     }
 }
 
 #[test]
 fn tests_cover_1_b() {
-    type Record = (u32, u32, u32, u32, u32);
-
-    let mut rdr = get_iterator_for_csv_test_file("./tests/CoverIB.txt");
-
-    let mut count_optimums = 0;
-    let mut count_total = 0;
-    let mut total_relative_difference: f32 = 0.0;
-
-    for result in rdr.deserialize::<Record>() {
-        if let Ok((L, W, l, w, solution)) = result {
-            count_total += 1;
-
-            let our_solution = cuantos_caben_b_y_d(w, l, W, L);
-
-            assert!(our_solution <= solution);
-            if our_solution == solution {
-                count_optimums += 1;
-            } else {
-                total_relative_difference += ((solution - our_solution) as f32) / (solution as f32);
-            }
-        }
-    }
-
-    let average_relative_difference = total_relative_difference / (count_total as f32);
-    let percentage_optimal_solutions = (count_optimums as f32) / (count_total as f32);
-
-    println!(
-        "Found {count_optimums} optimal solutions out of {count_total}, a {0:.2}% of the total.",
-        percentage_optimal_solutions * 100.0
-    );
-    println!("The average relative difference was of a {0:.2}% between the found and the known optimal solutions", average_relative_difference * 100.0);
+    run_cover_test("./tests/CoverIB.txt");
 }
 
 #[test]
 fn tests_cover_2_a() {
-    type Record = (u32, u32, u32, u32, u32);
-
-    let mut rdr = get_iterator_for_csv_test_file("./tests/CoverIIA.txt");
-
-    let mut count_optimums = 0;
-    let mut count_total = 0;
-    let mut total_relative_difference: f32 = 0.0;
-
-    for result in rdr.deserialize::<Record>() {
-        if let Ok((L, W, l, w, solution)) = result {
-            count_total += 1;
-
-            let our_solution = cuantos_caben_b_y_d(w, l, W, L);
-
-            assert!(our_solution <= solution);
-            if our_solution == solution {
-                count_optimums += 1;
-            } else {
-                total_relative_difference += ((solution - our_solution) as f32) / (solution as f32);
-            }
-        }
-    }
-
-    let average_relative_difference = total_relative_difference / (count_total as f32);
-    let percentage_optimal_solutions = (count_optimums as f32) / (count_total as f32);
-
-    println!(
-        "Found {count_optimums} optimal solutions out of {count_total}, a {0:.2}% of the total.",
-        percentage_optimal_solutions * 100.0
-    );
-    println!("The average relative difference was of a {0:.2}% between the found and the known optimal solutions", average_relative_difference * 100.0);
+    run_cover_test("./tests/CoverIIA.txt");
 }
 
 #[test]
 fn tests_cover_2_b() {
-    type Record = (u32, u32, u32, u32, u32);
-
-    let mut rdr = get_iterator_for_csv_test_file("./tests/CoverIIB.txt");
-
-    let mut count_optimums = 0;
-    let mut count_total = 0;
-    let mut total_relative_difference: f32 = 0.0;
-
-    for result in rdr.deserialize::<Record>() {
-        if let Ok((L, W, l, w, solution)) = result {
-            count_total += 1;
-
-            let our_solution = cuantos_caben_b_y_d(w, l, W, L);
-
-            assert!(our_solution <= solution);
-            if our_solution == solution {
-                count_optimums += 1;
-            } else {
-                total_relative_difference += ((solution - our_solution) as f32) / (solution as f32);
-            }
-        }
-    }
-
-    let average_relative_difference = total_relative_difference / (count_total as f32);
-    let percentage_optimal_solutions = (count_optimums as f32) / (count_total as f32);
-
-    println!(
-        "Found {count_optimums} optimal solutions out of {count_total}, a {0:.2}% of the total.",
-        percentage_optimal_solutions * 100.0
-    );
-    println!("The average relative difference was of a {0:.2}% between the found and the known optimal solutions", average_relative_difference * 100.0);
+    run_cover_test("./tests/CoverIIB.txt");
 }
 
 #[test]
 fn tests_cover_ships() {
-    type Record = (u32, u32, u32, u32, u32);
-
-    let mut rdr = get_iterator_for_csv_test_file("./tests/Ships.txt");
-
-    let mut count_optimums = 0;
-    let mut count_total = 0;
-    let mut total_relative_difference: f32 = 0.0;
-
-    for result in rdr.deserialize::<Record>() {
-        if let Ok((L, W, l, w, solution)) = result {
-            count_total += 1;
-
-            let our_solution = cuantos_caben_b_y_d(w, l, W, L);
-
-            assert!(our_solution <= solution);
-            if our_solution == solution {
-                count_optimums += 1;
-            } else {
-                total_relative_difference += ((solution - our_solution) as f32) / (solution as f32);
-            }
-        }
-    }
-
-    let average_relative_difference = total_relative_difference / (count_total as f32);
-    let percentage_optimal_solutions = (count_optimums as f32) / (count_total as f32);
-
-    println!(
-        "Found {count_optimums} optimal solutions out of {count_total}, a {0:.2}% of the total.",
-        percentage_optimal_solutions * 100.0
-    );
-    println!("The average relative difference was of a {0:.2}% between the found and the known optimal solutions", average_relative_difference * 100.0);
+    run_cover_test("./tests/Ships.txt");
 }
 
 #[test]
