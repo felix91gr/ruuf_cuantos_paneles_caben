@@ -1,6 +1,7 @@
 #![allow(non_snake_case)]
 
 pub mod pallet_loading_problem {
+    use omage::{colors::*, Components, Config, Image, Rgba};
 
     /// Calcula cuántos rectángulos de dimensiones (a, b) caben en un rectángulo
     /// de dimensiones (x, y)
@@ -36,8 +37,26 @@ pub mod pallet_loading_problem {
 
             let z_upper_bound = find_upper_bound_continuous(w, l, W, L);
 
+            let mut image_counter = 0;
+            let problem_name = format!("./renders/{w}x{l}_into_{W}x{L}");
+            std::fs::create_dir_all(&problem_name);
+
             if z_lower_bound == z_upper_bound {
                 println!("El óptimo es un corte de guillotina simple :D");
+                let img_path = format!("{problem_name}/guillotine.png");
+
+                if L % l == 0 {
+                    draw_rectangles(
+                        L, 0, 0, 0, 0, W, 0, 0, 0, 0, l,
+                        w, L, W, &img_path
+                    );    
+                } else {
+                    draw_rectangles(
+                        0, L, 0, 0, 0, 0, W, 0, 0, 0, l,
+                        w, L, W, &img_path
+                    );
+                }
+
                 z_lower_bound
             } else {
                 for (r1, s1) in P.iter() {
@@ -65,6 +84,19 @@ pub mod pallet_loading_problem {
                                             let z4 = (L4 / w) * (W4 / l);
                                             let z3 = ((L3 / l) * (W3 / w)).max((L3 / w) * (W3 / l));
                                             let z = z1 + z2 + z3 + z4 + z5;
+                                            
+                                            let img_path = format!("{problem_name}/step_{image_counter}.png");
+                                            image_counter += 1;
+
+                                            // TODO: this is a hack.
+                                            // I've inverted L2 <-> L4 and W2 <-> W4 because
+                                            // I've probably done their rendering wrong.
+                                            // I've got to figure out why they got inverted, and
+                                            // fix it.
+                                            draw_rectangles(
+                                                L1, L4, L3, L2, L5, W1, W4, W3, W2, W5, l,
+                                                w, L, W, &img_path
+                                            );
 
                                             if z > z_lower_bound {
                                                 println!("Encontramos un nuevo máximo: {z}");
@@ -72,6 +104,7 @@ pub mod pallet_loading_problem {
                                                 z_lower_bound = z;
                                                 if z_lower_bound == z_upper_bound {
                                                     println!("Máximo encontrado es óptimo.");
+
                                                     return z;
                                                 }
                                             }
@@ -113,5 +146,144 @@ pub mod pallet_loading_problem {
         let area_small_rectangle = w * l;
         let area_large_rectangle = W * L;
         area_large_rectangle / area_small_rectangle
+    }
+
+    fn draw_rectangles(
+        L1: u32,
+        L2: u32,
+        L3: u32,
+        L4: u32,
+        L5: u32,
+        W1: u32,
+        W2: u32,
+        W3: u32,
+        W4: u32,
+        W5: u32,
+        l: u32,
+        w: u32,
+        L: u32,
+        W: u32,
+        path: &str,
+    ) {
+
+        const SCALE: u32 = 50;
+
+        const BLUE: Rgba<u8> = Rgba([60, 80, 255, 255]);
+        const ORANGE: Rgba<u8> = Rgba([255, 100, 20, 255]);
+        const GREEN: Rgba<u8> = Rgba([60, 255, 60, 255]);
+        const BROWN: Rgba<u8> = Rgba([128, 60, 10, 255]);
+
+        const OUTPUT_PATH : &str =  "output.png";
+
+        let config = Config::new(W * SCALE, L * SCALE, WHITE, None,OUTPUT_PATH, None);
+
+        let mut image = Image::new();
+
+        image.config(config).init().unwrap();
+
+        let a1 = Components::Rectangle(L1 * SCALE, W1 * SCALE, 0, 0, BLUE);
+
+        image.add_component(&a1);
+
+        let r1 = L1 / l;
+        let u1 = W1 / w;
+
+        let mut a1_lines = Vec::with_capacity((r1 * u1) as usize);
+
+        // Hay r1 filas de largo l en L1
+        for i in 1..r1 {
+            let line = Components::Line(0, i * l * SCALE, W1 * SCALE, i * l * SCALE, BLACK);
+            a1_lines.push(line);
+        }
+
+        // Y hay u1 columnas de ancho w en W1
+        for i in 1..u1 {
+            let line = Components::Line(i * w * SCALE, 0, i * w * SCALE, L1 * SCALE, BLACK);
+            a1_lines.push(line);
+        }
+
+        for line in a1_lines.iter() {
+            image.add_component(&line);
+        }
+
+        let a2 = Components::Rectangle(L2 * SCALE, W2 * SCALE, (W - W2) * SCALE, 0, ORANGE);
+        
+        image.add_component(&a2);
+        
+        let s1 = L2 / w;
+        let t2 = W2 / l;
+
+        let mut a2_lines = Vec::with_capacity((s1 * t2) as usize);
+
+        // Hay s1 filas de largo w en L2
+        for i in 1..s1 {
+            let line = Components::Line((W - W2) * SCALE, i * w * SCALE, W * SCALE, i * w * SCALE, BLACK);
+            a2_lines.push(line);
+        }
+
+        // Y hay t2 columnas de ancho l en W2
+        for i in 1..t2 {
+            let line = Components::Line((W - i * l) * SCALE, 0, (W - i * l) * SCALE, L2 * SCALE, BLACK);
+            a2_lines.push(line);
+        }
+
+        for line in a2_lines.iter() {
+            image.add_component(&line);
+        }
+        
+        
+        let a4 = Components::Rectangle(L4 * SCALE, W4 * SCALE, 0, (L - L4) * SCALE, BROWN);
+        image.add_component(&a4);
+        
+        let s2 = L4 / w;
+        let t1 = W4 / l;
+
+        let mut a4_lines = Vec::with_capacity((s2 * t1) as usize);
+
+        // Hay s2 filas de largo w en L4
+        for i in 1..s2 {
+            let line = Components::Line(0, (L - i * w) * SCALE, W4 * SCALE, (L - i * w) * SCALE, BLACK);
+            a4_lines.push(line);
+        }
+
+        // Y hay t1 columnas de ancho l en W4
+        for i in 1..t1 {
+            let line = Components::Line(i * l * SCALE, (L - L4) * SCALE, i * l * SCALE, L * SCALE, BLACK);
+            a4_lines.push(line);
+        }
+
+        for line in a4_lines.iter() {
+            image.add_component(&line);
+        }
+
+
+        let a5 = Components::Rectangle(L5 * SCALE, W5 * SCALE, (W - W5) * SCALE, (L - L5) * SCALE, RED);
+        image.add_component(&a5);
+
+        let r2 = L5 / l;
+        let u2 = W5 / w;
+
+        let mut a5_lines = Vec::with_capacity((s2 * t1) as usize);
+
+        // Hay r2 filas de largo l en L5
+        for i in 1..r2 {
+            let line = Components::Line((W - W5) * SCALE, (L - i * l) * SCALE, W * SCALE, (L - i * l) * SCALE, BLACK);
+            a5_lines.push(line);
+        }
+
+        // Y hay u2 columnas de ancho w en W5
+        for i in 1..u2 {
+            let line = Components::Line((W - i * w) * SCALE, (L - L5) * SCALE, (W - i * w) * SCALE, L * SCALE, BLACK);
+            a5_lines.push(line);
+        }
+
+        for line in a5_lines.iter() {
+            image.add_component(&line);
+        }
+
+
+        image.draw();
+
+        std::fs::rename(OUTPUT_PATH, path);
     }
 }

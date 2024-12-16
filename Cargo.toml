@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+omage = "0.3.11"
 
 [dev-dependencies]
 # For reading the test batteries
