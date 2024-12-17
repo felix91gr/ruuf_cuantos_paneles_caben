@@ -1,16 +1,52 @@
 # ¿Cuántos paneles caben?
 
-## Supuestos
+## Preámbulo: Supuestos
 
 En el resto del documento y en mi solución, voy a asumir lo siguiente:
 
 1. Los paneles van a estar alineados con los lados del techo, vale decir, en orientación horizontal o vertical. Voy a considerar el escenario específico en el que no nos interesa colocar los paneles en diagonal.
 
-2. Todas las dimensiones involucradas son enteras. Esto no es necesario en realidad, pero para una primera entrega, ignorar los números de punto flotante facilita las cosas.
+2. Todas las dimensiones involucradas son enteras. Si bien el algoritmo funciona para distancias continuas sin problema, preferí acotarlo a enteros para reducir el tiempo de desarrollo.
+
+## Para usar el código
+
+### Probar que esté todo funcionando
+
+El proyecto está desarrollado en Rust. Para poder correrlo, se necesita instalar la _toolchain_ del lenguaje: [Install Rust](https://www.rust-lang.org/tools/install).
+
+Teniendo a Rust instalado, basta con abrir una terminal en el directorio del repositorio y lanzar el proyecto usando Cargo:
+
+> `cargo run`
+
+Esto va a ejecutar el código de la función `main`, que se encuentra en `./src/main.rs`
+
+Para ejecutar la suite de pruebas canónicas:
+
+> `cargo test -- --nocapture`
+
+Esto va a ejecutar las pruebas y mostrará estadísticas (en la terminal) sobre la optimalidad de las soluciones encontradas.
+
+### Para usar la función
+
+La función que calcula la cantidad de paneles está en el archivo `./src/lib.rs`:
+
+```rust
+cuantos_caben_b_y_d(w: u32, l: u32, W: u32, L: u32, draw: bool) -> u32
+```
+
+Sus parámetros son:
+
+* `w`: el ancho de los paneles
+* `l`: el largo de los paneles
+* `W`: el ancho del techo
+* `L`: el largo del techo
+* `draw`: parámetro que le indica al programa si se desea generar una imagen de cada solución probada. Las imágenes que genera el programa para cada instancia del problema quedan bajo el directorio `renders/wxl_into_WxL/`.
+
+El valor retornado por la función es la cantidad de paneles de la mejor solución encontrada.
 
 ## Descripción de la Solución
 
-Voy a utilizar una heurística (aproximación) que fue descrita por primera vez en 1982 por Bischoff y Dowsland[^1]. Esta heurística se basa en 2 cosas importantes:
+En la función, utilizo una heurística (aproximación) que fue descrita por primera vez en 1982 por Bischoff y Dowsland[^1]. Esta heurística se basa en 2 cosas importantes:
 
 1. La experiencia de que ciertos patrones de 5 bloques suelen llevar a un muy buen uso del espacio disponible:
 
