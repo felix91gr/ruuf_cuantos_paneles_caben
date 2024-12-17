@@ -4,11 +4,15 @@ use std::{collections::HashMap, fs::File};
 use csv::Reader;
 use ruuf_cuantos_paneles_caben::pallet_loading_problem::cuantos_caben_b_y_d;
 
+// We default to not rendering our iterations during testing,
+// because rendering takes quite a while.
+const DRAW_DURING_TESTING : bool = false;
+
 #[test]
 fn tests_del_enunciado() {
-    let should_be_4 = cuantos_caben_b_y_d(1, 2, 2, 4);
-    let should_be_7 = cuantos_caben_b_y_d(1, 2, 3, 5);
-    let should_be_0 = cuantos_caben_b_y_d(2, 2, 1, 10);
+    let should_be_4 = cuantos_caben_b_y_d(1, 2, 2, 4, DRAW_DURING_TESTING);
+    let should_be_7 = cuantos_caben_b_y_d(1, 2, 3, 5, DRAW_DURING_TESTING);
+    let should_be_0 = cuantos_caben_b_y_d(2, 2, 1, 10, DRAW_DURING_TESTING);
     assert_eq!(should_be_4, 4);
     assert_eq!(should_be_7, 7);
     assert_eq!(should_be_0, 0);
@@ -23,25 +27,19 @@ fn get_iterator_for_csv_test_file(file_path: &str) -> Reader<File> {
         .unwrap()
 }
 
-#[test]
-fn tests_cover_1_a() {
-    run_cover_test("./tests/CoverIA.txt");
-}
-
 fn run_cover_test(test_path: &str) {
     type Record = (u32, u32, u32, u32, u32);
 
     let mut rdr = get_iterator_for_csv_test_file(test_path);
 
     let mut count_total = 0;
-    let mut total_relative_difference: f32 = 0.0;
     let mut differences_vs_optimum: HashMap<u32, u32> = HashMap::new();
 
     for result in rdr.deserialize::<Record>() {
         if let Ok((L, W, l, w, solution)) = result {
             count_total += 1;
 
-            let our_solution = cuantos_caben_b_y_d(w, l, W, L);
+            let our_solution = cuantos_caben_b_y_d(w, l, W, L, DRAW_DURING_TESTING);
 
             assert!(our_solution <= solution);
 
@@ -69,6 +67,11 @@ fn run_cover_test(test_path: &str) {
             println!("Encontramos una solución {delta} unidades menor al óptimo para {count_of_delta} de {count_total} escenarios, un {0:.2}% del total", percentage_of_total);
         }
     }
+}
+
+#[test]
+fn tests_cover_1_a() {
+    run_cover_test("./tests/CoverIA.txt");
 }
 
 #[test]
@@ -104,7 +107,7 @@ fn tests_cover_3_b() {
         if let Ok((L, W, l, w, LB, UB)) = result {
             count_total += 1;
 
-            let our_solution = cuantos_caben_b_y_d(w, l, W, L);
+            let our_solution = cuantos_caben_b_y_d(w, l, W, L, DRAW_DURING_TESTING);
 
             assert!(our_solution <= UB);
             if our_solution >= LB {
