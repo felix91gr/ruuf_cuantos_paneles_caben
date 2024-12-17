@@ -26,13 +26,9 @@ Lo que se hace en B&D se basa en estas dos cosas:
 
 1. Primero, determinar qué bloques exactos (ie, sin restos) se pueden hacer con los paneles, sujeto a la condición de que el bloque formado quepa en el rectángulo grande.
 
->> EJEMPLO?
-
 2. Generar una lista de las combinaciones de bloques exactos que se pueden formar para rellenar las áreas 1, 2, 4 y 5 de la primera imagen.
 
     > Es importante notar que estas 4 áreas tienen una orientación predeterminada. Esto está bien, pues hay tanta simetría en el sistema que las orientaciones que el área 1 no explora son cubiertas por las áreas 2 y 4. Lo mismo para el área 5 y para las otras dos.
-
->> EJEMPLO?
 
 3. Para cada combinación:
 

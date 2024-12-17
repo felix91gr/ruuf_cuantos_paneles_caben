@@ -41,8 +41,10 @@ pub mod pallet_loading_problem {
 
             let mut image_counter = 0;
             let problem_name = format!("./renders/{w}x{l}_into_{W}x{L}");
-            let _ = std::fs::create_dir_all(&problem_name);
-
+            if draw {
+                let _ = std::fs::create_dir_all(&problem_name);
+            }
+            
             if z_lower_bound == z_upper_bound {
                 if PRINT_PROGRESS_TO_CONSOLE {
                     println!("El óptimo es un corte de guillotina simple :D");
@@ -125,7 +127,7 @@ pub mod pallet_loading_problem {
                 if PRINT_PROGRESS_TO_CONSOLE {
                     println!("Fin de la búsqueda. No estamos seguros de que el resultado sea óptimo.");
                 }
-                
+
                 z_lower_bound
             }
         }
