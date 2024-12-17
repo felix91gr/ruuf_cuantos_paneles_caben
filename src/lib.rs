@@ -3,7 +3,7 @@
 pub mod pallet_loading_problem {
     use omage::{colors::*, Components, Config, Image, Rgba};
 
-    const PRINT_PROGRESS_TO_CONSOLE : bool = false;
+    const PRINT_PROGRESS_TO_CONSOLE: bool = false;
 
     /// Calcula cuántos rectángulos de dimensiones (a, b) caben en un rectángulo
     /// de dimensiones (x, y)
@@ -44,25 +44,19 @@ pub mod pallet_loading_problem {
             if draw {
                 let _ = std::fs::create_dir_all(&problem_name);
             }
-            
+
             if z_lower_bound == z_upper_bound {
                 if PRINT_PROGRESS_TO_CONSOLE {
                     println!("El óptimo es un corte de guillotina simple :D");
                 }
-                
+
                 let img_path = format!("{problem_name}/guillotine.png");
 
                 if draw {
                     if L % l == 0 {
-                        draw_rectangles(
-                            L, 0, 0, 0, 0, W, 0, 0, 0, 0, l,
-                            w, L, W, &img_path
-                        );    
+                        draw_rectangles(L, 0, 0, 0, 0, W, 0, 0, 0, 0, l, w, L, W, &img_path);
                     } else {
-                        draw_rectangles(
-                            0, L, 0, 0, 0, 0, W, 0, 0, 0, l,
-                            w, L, W, &img_path
-                        );
+                        draw_rectangles(0, L, 0, 0, 0, 0, W, 0, 0, 0, l, w, L, W, &img_path);
                     }
                 }
                 z_lower_bound
@@ -91,14 +85,15 @@ pub mod pallet_loading_problem {
                                             let z4 = (L4 / w) * (W4 / l);
                                             let z3 = ((L3 / l) * (W3 / w)).max((L3 / w) * (W3 / l));
                                             let z = z1 + z2 + z3 + z4 + z5;
-                                            
-                                            let img_path = format!("{problem_name}/step_{image_counter}.png");
+
+                                            let img_path =
+                                                format!("{problem_name}/step_{image_counter}.png");
                                             image_counter += 1;
 
                                             if draw {
                                                 draw_rectangles(
-                                                    L1, L2, L3, L4, L5, W1, W2, W3, W4, W5, l,
-                                                    w, L, W, &img_path
+                                                    L1, L2, L3, L4, L5, W1, W2, W3, W4, W5, l, w,
+                                                    L, W, &img_path,
                                                 );
                                             }
 
@@ -112,7 +107,7 @@ pub mod pallet_loading_problem {
                                                     if PRINT_PROGRESS_TO_CONSOLE {
                                                         println!("Máximo encontrado es óptimo.");
                                                     }
-                                                    
+
                                                     return z;
                                                 }
                                             }
@@ -125,7 +120,9 @@ pub mod pallet_loading_problem {
                 }
 
                 if PRINT_PROGRESS_TO_CONSOLE {
-                    println!("Fin de la búsqueda. No estamos seguros de que el resultado sea óptimo.");
+                    println!(
+                        "Fin de la búsqueda. No estamos seguros de que el resultado sea óptimo."
+                    );
                 }
 
                 z_lower_bound
@@ -175,10 +172,9 @@ pub mod pallet_loading_problem {
         W: u32,
         path: &str,
     ) {
-
         // Estoy dibujando transpuesto, así que en este contexto:
         // A1 y A5 son horizontales
-        // A2 y A4 son verticales  
+        // A2 y A4 son verticales
 
         const SCALE: u32 = 50;
 
@@ -191,9 +187,9 @@ pub mod pallet_loading_problem {
 
         const LIGHT_GRAY: Rgba<u8> = Rgba([160, 160, 160, 255]);
 
-        const OUTPUT_PATH : &str =  "output.png";
+        const OUTPUT_PATH: &str = "output.png";
 
-        let config = Config::new(L * SCALE, W * SCALE, WHITE, None,OUTPUT_PATH, None);
+        let config = Config::new(L * SCALE, W * SCALE, WHITE, None, OUTPUT_PATH, None);
 
         let mut image = Image::new();
 
@@ -209,7 +205,6 @@ pub mod pallet_loading_problem {
             let line = Components::Line(i * SCALE, 0, i * SCALE, W * SCALE, LIGHT_GRAY);
             grid_lines.push(line);
         }
-
 
         for line in grid_lines.iter() {
             image.add_component(&line);
@@ -240,12 +235,10 @@ pub mod pallet_loading_problem {
             image.add_component(&line);
         }
 
-
-        
         let a2 = Components::Rectangle(W2 * SCALE, L2 * SCALE, (L - L2) * SCALE, 0, ORANGE);
-        
+
         image.add_component(&a2);
-        
+
         let s1 = L2 / w;
         let t2 = W2 / l;
 
@@ -253,24 +246,35 @@ pub mod pallet_loading_problem {
 
         // Hay s1 columnas de ancho w en L2
         for i in 1..s1 {
-            let line = Components::Line((L - i * w) * SCALE, 0, (L - i * w) * SCALE, W2 * SCALE, BLACK);
+            let line = Components::Line(
+                (L - i * w) * SCALE,
+                0,
+                (L - i * w) * SCALE,
+                W2 * SCALE,
+                BLACK,
+            );
             a2_lines.push(line);
         }
 
         // Y hay t2 filas de largo l en W2
         for i in 1..t2 {
-            let line = Components::Line((L - L2) * SCALE, i * l * SCALE, L * SCALE, i * l * SCALE, BLACK);
+            let line = Components::Line(
+                (L - L2) * SCALE,
+                i * l * SCALE,
+                L * SCALE,
+                i * l * SCALE,
+                BLACK,
+            );
             a2_lines.push(line);
         }
 
         for line in a2_lines.iter() {
             image.add_component(&line);
         }
-        
-        
+
         let a4 = Components::Rectangle(W4 * SCALE, L4 * SCALE, 0, (W - W4) * SCALE, BROWN);
         image.add_component(&a4);
-        
+
         let s2 = L4 / w;
         let t1 = W4 / l;
 
@@ -278,13 +282,25 @@ pub mod pallet_loading_problem {
 
         // Hay s2 columnas de ancho w en L4
         for i in 1..s2 {
-            let line = Components::Line(i * w * SCALE, (W - W4) * SCALE, i * w * SCALE, W * SCALE, BLACK);
+            let line = Components::Line(
+                i * w * SCALE,
+                (W - W4) * SCALE,
+                i * w * SCALE,
+                W * SCALE,
+                BLACK,
+            );
             a4_lines.push(line);
         }
 
         // Y hay t1 filas de largo l en W4
         for i in 1..t1 {
-            let line = Components::Line(0, (W - i * l) * SCALE, L4 * SCALE, (W - i * l) * SCALE, BLACK);
+            let line = Components::Line(
+                0,
+                (W - i * l) * SCALE,
+                L4 * SCALE,
+                (W - i * l) * SCALE,
+                BLACK,
+            );
             a4_lines.push(line);
         }
 
@@ -292,8 +308,13 @@ pub mod pallet_loading_problem {
             image.add_component(&line);
         }
 
-
-        let a5 = Components::Rectangle(W5 * SCALE, L5 * SCALE, (L - L5) * SCALE, (W - W5) * SCALE, BRICK);
+        let a5 = Components::Rectangle(
+            W5 * SCALE,
+            L5 * SCALE,
+            (L - L5) * SCALE,
+            (W - W5) * SCALE,
+            BRICK,
+        );
         image.add_component(&a5);
 
         let r2 = L5 / l;
@@ -303,13 +324,25 @@ pub mod pallet_loading_problem {
 
         // Hay r2 columnas de ancho l en L5
         for i in 1..r2 {
-            let line = Components::Line((L - i * l) * SCALE, (W - W5) * SCALE, (L - i * l) * SCALE, W * SCALE, BLACK);
+            let line = Components::Line(
+                (L - i * l) * SCALE,
+                (W - W5) * SCALE,
+                (L - i * l) * SCALE,
+                W * SCALE,
+                BLACK,
+            );
             a5_lines.push(line);
         }
 
         // Y hay u2 filas de largo w en W5
         for i in 1..u2 {
-            let line = Components::Line((L - L5) * SCALE, (W - i * w) * SCALE, L * SCALE, (W - i * w) * SCALE, BLACK);
+            let line = Components::Line(
+                (L - L5) * SCALE,
+                (W - i * w) * SCALE,
+                L * SCALE,
+                (W - i * w) * SCALE,
+                BLACK,
+            );
             a5_lines.push(line);
         }
 
@@ -330,17 +363,35 @@ pub mod pallet_loading_problem {
         let a3 = if z3_horizontal >= z3_vertical {
             let ancho = L3 / l;
             let alto = W3 / w;
-            let rect = Components::Rectangle(alto * w * SCALE, ancho * l * SCALE, L1 * SCALE, W2 * SCALE, GREEN);
+            let rect = Components::Rectangle(
+                alto * w * SCALE,
+                ancho * l * SCALE,
+                L1 * SCALE,
+                W2 * SCALE,
+                GREEN,
+            );
 
             // Columnas
             for i in 1..ancho {
-                let line = Components::Line((L1 + i * l) * SCALE, W2 * SCALE, (L1 + i * l) * SCALE, (W2 + alto * w) * SCALE, BLACK);
+                let line = Components::Line(
+                    (L1 + i * l) * SCALE,
+                    W2 * SCALE,
+                    (L1 + i * l) * SCALE,
+                    (W2 + alto * w) * SCALE,
+                    BLACK,
+                );
                 a3_lines.push(line);
             }
 
             // Filas
             for i in 1..alto {
-                let line = Components::Line(L1 * SCALE, (W2 + i * w) * SCALE, (L1 + ancho * l) * SCALE, (W2 + i * w) * SCALE, BLACK);
+                let line = Components::Line(
+                    L1 * SCALE,
+                    (W2 + i * w) * SCALE,
+                    (L1 + ancho * l) * SCALE,
+                    (W2 + i * w) * SCALE,
+                    BLACK,
+                );
                 a3_lines.push(line);
             }
 
@@ -348,40 +399,70 @@ pub mod pallet_loading_problem {
         } else {
             let ancho = L3 / w;
             let alto = W3 / l;
-            let rect = Components::Rectangle(alto * l * SCALE, ancho * w * SCALE, L1 * SCALE, W2 * SCALE, GREEN);
-            
+            let rect = Components::Rectangle(
+                alto * l * SCALE,
+                ancho * w * SCALE,
+                L1 * SCALE,
+                W2 * SCALE,
+                GREEN,
+            );
+
             // Columnas
             for i in 1..ancho {
-                let line = Components::Line((L1 + i * w) * SCALE, W2 * SCALE, (L1 + w * l) * SCALE, (W2 + alto * l) * SCALE, BLACK);
+                let line = Components::Line(
+                    (L1 + i * w) * SCALE,
+                    W2 * SCALE,
+                    (L1 + i * w) * SCALE,
+                    (W2 + alto * l) * SCALE,
+                    BLACK,
+                );
                 a3_lines.push(line);
             }
 
             // Filas
             for i in 1..alto {
-                let line = Components::Line(L1 * SCALE, (W2 + i * l) * SCALE, (L1 + ancho * w) * SCALE, (W2 + i * l) * SCALE, BLACK);
+                let line = Components::Line(
+                    L1 * SCALE,
+                    (W2 + i * l) * SCALE,
+                    (L1 + ancho * w) * SCALE,
+                    (W2 + i * l) * SCALE,
+                    BLACK,
+                );
                 a3_lines.push(line);
             }
 
             rect
         };
 
-        // Rectángulos de zonas perdidas
-        let ded12 = Components::Rectangle(W2 * SCALE, (L - L1 - L2) * SCALE, L1 * SCALE, 0, DEAD_ZONE);
-        let ded25 = Components::Rectangle((W - W2 - W5) * SCALE, L5 * SCALE, (L - L5) * SCALE, W2 * SCALE, DEAD_ZONE);
-        let ded54 = Components::Rectangle(W4 * SCALE, (L - L4 - L5) * SCALE, L4 * SCALE, (W - W4) * SCALE, DEAD_ZONE);
-        let ded41 = Components::Rectangle((W - W4 - W1) * SCALE, L1 * SCALE, 0, W1 * SCALE, DEAD_ZONE);
-
         if z3_horizontal > 0 || z3_vertical > 0 {
-        
             image.add_component(&a3);
 
             for line in a3_lines.iter() {
                 image.add_component(&line);
             }
-
-            image.add_components(vec![&ded12, &ded25, &ded54, &ded41]);
-
         }
+
+        // Rectángulos de zonas perdidas
+        let ded12 =
+            Components::Rectangle(W2 * SCALE, (L - L1 - L2) * SCALE, L1 * SCALE, 0, DEAD_ZONE);
+        let ded25 = Components::Rectangle(
+            (W - W2 - W5) * SCALE,
+            L5 * SCALE,
+            (L - L5) * SCALE,
+            W2 * SCALE,
+            DEAD_ZONE,
+        );
+        let ded54 = Components::Rectangle(
+            W4 * SCALE,
+            (L - L4 - L5) * SCALE,
+            L4 * SCALE,
+            (W - W4) * SCALE,
+            DEAD_ZONE,
+        );
+        let ded41 =
+            Components::Rectangle((W - W4 - W1) * SCALE, L1 * SCALE, 0, W1 * SCALE, DEAD_ZONE);
+
+        image.add_components(vec![&ded12, &ded25, &ded54, &ded41]);
 
         if let Err(e) = image.draw() {
             println!("Error al dibujar imagen: {e}");

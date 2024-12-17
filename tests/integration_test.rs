@@ -6,7 +6,7 @@ use ruuf_cuantos_paneles_caben::pallet_loading_problem::cuantos_caben_b_y_d;
 
 // We default to not rendering our iterations during testing,
 // because rendering takes quite a while.
-const DRAW_DURING_TESTING : bool = false;
+const DRAW_DURING_TESTING: bool = false;
 
 #[test]
 fn tests_del_enunciado() {
