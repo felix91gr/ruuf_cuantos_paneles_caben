@@ -6,6 +6,8 @@ En el resto del documento y en mi solución, voy a asumir lo siguiente:
 
 1. Los paneles van a estar alineados con los lados del techo, vale decir, en orientación horizontal o vertical. Voy a considerar el escenario específico en el que no nos interesa colocar los paneles en diagonal.
 
+2. Todas las dimensiones involucradas son enteras. Esto no es necesario en realidad, pero para una primera entrega, ignorar los números de punto flotante facilita las cosas.
+
 ## Descripción de la Solución
 
 Voy a utilizar una heurística (aproximación) que fue descrita por primera vez en 1982 por Bischoff y Dowsland[^1]. Esta heurística se basa en 2 cosas importantes:
