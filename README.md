@@ -82,6 +82,14 @@ El posicionamiento así elegido usa bien el espacio, pero no siempre usa la cant
 
 Dicho esto, es una buena aproximación, y se utiliza como base para algoritmos más elaborados que sí son óptimos.
 
+## Visualización de la Solución
+
+A continuación podemos ver cómo el algoritmo encuentra el óptimo para el problema de poner paneles de 3x4 en un techo de 20x20:
+
+<p align="center">
+    <img src="./imagenes/animacion_3x4_en_20x20.gif" alt="Animación del algoritmo resolviendo 3x4 en 20x20" width="500" style="display:block;margin:auto;margin-top:10px;margin-bottom:15px"/>
+</p>
+
 ## Límites de la Solución
 
 La solución presentada tiene varias limitaciones. Aquí las señalo.
