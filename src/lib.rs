@@ -5,8 +5,8 @@ pub mod pallet_loading_problem {
 
     const PRINT_PROGRESS_TO_CONSOLE: bool = false;
 
-    /// Calcula cuántos rectángulos de dimensiones (a, b) caben en un rectángulo
-    /// de dimensiones (x, y)
+    /// Calcula cuántos rectángulos de dimensiones (w, l) caben en un rectángulo
+    /// de dimensiones (W, L)
     ///
     /// En esta función usamos la heurística de Bischoff y Dowsland
     ///
@@ -22,8 +22,6 @@ pub mod pallet_loading_problem {
     /// assert_eq!(should_be_7, 7);
     /// assert_eq!(should_be_0, 0);
     /// ```
-    ///
-    /// Versión con enteros por ahora (TODO: versión con floats coming soon?)
     pub fn cuantos_caben_b_y_d(w: u32, l: u32, W: u32, L: u32, draw: bool) -> u32 {
         if w > l {
             // Reordenamos para que w sea menor que l
